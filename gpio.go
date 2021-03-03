@@ -6,7 +6,7 @@ import (
     "io/ioutil"
     "os/exec"
     "strconv"
-    
+    "strings"
 )
 
 
@@ -83,6 +83,7 @@ func gpio_init(num int, mode string, value int) string {
     
     cmd += path
     cmd += "/value"
+    ExecCommand( cmd )
     
     return ""
 }
@@ -107,11 +108,14 @@ func gpio_read(num int) (bool, string) {
     cmd += "/value"
     
     outbyte := ExecCommand( cmd )
-    if outbyte == "1"{
-        return true,""
+    
+    //fmt.Println("outbyte==", outbyte)
+    //这里低电平有效
+    if strings.Contains(outbyte, "1"){
+        return false,""
     }
     
-    return false, ""
+    return true, ""
 }
 
 /*
@@ -139,12 +143,31 @@ func gpio_set(num int, value int) string{
     cmd += path
     cmd += "/value"
     
-    outbyte := ExecCommand( cmd )
-    if outbyte == "1"{
-        return ""
-    }
+    ExecCommand( cmd )
     
     return ""
+}
+
+func jtag_sel(num int){
+    if num == 0 {
+        gpio_set(21, 0)
+        gpio_set(20, 1)
+        gpio_set(26, 1)
+    } else if num == 1 {
+        gpio_set(21, 1)
+        gpio_set(20, 0)
+        gpio_set(26, 1)
+    } else if num == 2 {
+        gpio_set(21, 1)
+        gpio_set(20, 1)
+        gpio_set(26, 0)
+    }
+}
+
+func jtag_disable(){
+    gpio_set(21, 1)
+    gpio_set(20, 1)
+    gpio_set(26, 1)
 }
 
 func dev_gpio_init(){
@@ -155,6 +178,7 @@ func dev_gpio_init(){
     gpio_init(24, "out", 1)
     gpio_init(27, "out", 1)
     gpio_init(17, "out", 1)
+    
     //key
     gpio_init(18, "input", 1)
     gpio_init(4, "input", 1)
@@ -178,6 +202,5 @@ func dev_gpio_init(){
     gpio_set(23, 1)//LED 3
     gpio_set(27, 1)//LED 2
     gpio_set(17, 0)//LED 1
-    
     
 }

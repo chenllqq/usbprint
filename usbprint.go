@@ -11,7 +11,7 @@ import (
     //"strconv"
     //"time"
     
-    //"github.com/tarm/goserial"
+    "github.com/tarm/goserial"
 )
 
 func page_pinrt_command( sio io.ReadWriteCloser ){
@@ -138,7 +138,7 @@ func page_pinrt_command( sio io.ReadWriteCloser ){
 /*
 功能：打印二维码
 */
-func pinrt_QRCode( sio io.ReadWriteCloser ){
+func pinrt_QRCode( sio io.ReadWriteCloser ,str string){
     
     sbuf := make([]byte, 2000 )
     
@@ -149,7 +149,7 @@ func pinrt_QRCode( sio io.ReadWriteCloser ){
     sbuf[slen] = 0x1B
     slen++
     sbuf[slen] = 0x40
-
+    
     //页开始
     slen++
     sbuf[slen] = 0x1a
@@ -166,11 +166,11 @@ func pinrt_QRCode( sio io.ReadWriteCloser ){
     slen++
     sbuf[slen] = 0x00
     slen++
-    sbuf[slen] = 0x80
+    sbuf[slen] = 0xc8//页面宽度 25mm 200个点
     slen++
-    sbuf[slen] = 0x01
+    sbuf[slen] = 0x00
     slen++
-    sbuf[slen] = 0xFA
+    sbuf[slen] = 0x78//页面高度 15mm 120个点
     slen++
     sbuf[slen] = 0x00
     slen++
@@ -192,16 +192,16 @@ func pinrt_QRCode( sio io.ReadWriteCloser ){
     slen++
     sbuf[slen] = 0x00 //左上角坐标x 高8位
     slen++
-    sbuf[slen] = 0x15 //左上角坐标y
+    sbuf[slen] = 0x05 //左上角坐标y
     slen++
     sbuf[slen] = 0x00 //左上角坐标y
     slen++
     sbuf[slen] = 0x04 //二维码大小
     slen++
     sbuf[slen] = 0x00
-
+    
     //二维码数据,最大47个字母
-    str := string("ABCDEFHIJKABCDEFHIJKABCDEFHIJKABCDEFHIJKABCDEFH")
+    //str := string("ABCDEFHIJKABCDEFHIJKABCDEFHIJKABCDEFHIJKABCDEFH")
     
     var data []byte
     
@@ -240,15 +240,26 @@ func pinrt_QRCode( sio io.ReadWriteCloser ){
     }
 }
 
-
-func dev_usbprint_init(){
 /*
-    cfg := &serial.Config{Name: "/dev/ttyUSB0", Baud: 115200 , ReadTimeout:3 }
+功能：走纸功能
+*/
+func pinrt_null(){
+
+}
+
+
+func dev_usbprint_printf(str string){
+
+    cfg := &serial.Config{Name: "/dev/ttyUSB1", Baud: 115200 , ReadTimeout:3 }
     
     iorwc, err := serial.OpenPort(cfg)
     
     if( err != nil ){
         fmt.Println(err)
         return
-    }*/
+    }
+    
+    pinrt_QRCode(iorwc, str)
+    
+    iorwc.Close()
 }
