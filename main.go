@@ -164,6 +164,8 @@ func task_led(){
 func main() {
     
     Version = "1.0.0"
+
+    Version = "1.0.1"
     
     dev_gpio_init()
     
@@ -175,6 +177,6 @@ func main() {
         time.Sleep( 1000*time.Millisecond )
     }
 
-    
+
     return
 }
