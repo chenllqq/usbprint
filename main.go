@@ -163,9 +163,7 @@ func task_led(){
 
 func main() {
     
-    Version = "1.0.0"
-
-    Version = "1.0.1"
+    Version = "1.0.2"
     
     dev_gpio_init()
     
