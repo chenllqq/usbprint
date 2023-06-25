@@ -6,6 +6,8 @@ import (
     "time"
 )
 
+var Version string
+
 var download bool
 
 /*
@@ -161,6 +163,7 @@ func task_led(){
 
 func main() {
     
+    Version = "1.0.0"
     
     dev_gpio_init()
     
